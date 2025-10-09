@@ -182,10 +182,3 @@ APP_COBRADORES_API/
     ├── ...
     └── .env
 
-🧑‍💻 Autor
-
-Guido Pisarra
-Arquitectura NestJS + Microservicios
-💼 LinkedIn (opcional)
-
-📧 guido@tudominio.com
