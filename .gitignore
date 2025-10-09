@@ -1,0 +1,74 @@
+# ==========================================
+# 🧹 Git Ignore para Proyecto NestJS con Microservicios
+# ==========================================
+
+# Node
+node_modules/
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*.sublime-workspace
+*.sublime-project
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment / Secrets
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# Logs
+logs/
+*.log
+log.txt
+nohup.out
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+*.old
+
+# Docker
+docker-compose.override.yml
+.docker/
+.dockerignore
+
+# PM2
+pids
+*.pid
+*.seed
+
+# TypeORM / Prisma / Sequelize
+ormconfig.json
+ormconfig.js
+prisma/dev.db
+prisma/migrations/
+
+# Tests
+test-results/
+jest-report/
+coverage/
+
+# Misc
+*.tgz
+*.lock
