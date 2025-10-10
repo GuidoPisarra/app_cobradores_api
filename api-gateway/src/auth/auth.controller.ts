@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Controller, Post, Body, Inject, HttpException, HttpStatus } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { LoginDto } from '../dto/users/login.dto';
+import { LoginDTO } from '../dto/users/login.dto';
 import { AuthService } from './auth.service';
 import { firstValueFrom, timeout } from 'rxjs';
 
@@ -16,13 +16,13 @@ export class AuthController {
   ) { }
 
   @Post('login')
-  async login(@Body() dto: LoginDto) {
+  async login(@Body() dto: LoginDTO) {
     // send RPC request to users microservice
     const pattern = { cmd: 'auth.validate' };
     const payload = { email: dto.email, password: dto.password };
 
     try {
-      // .send returns Observable -> await it with firstValueFrom
+      // .send devuelve Observable -> await se queda con firstValueFrom
       const response$ = this.client.send(pattern, payload);
       // opcional: timeout en ms (ej. 5000)
       const res = await firstValueFrom(response$.pipe(timeout(5000)));
