@@ -10,7 +10,7 @@ import { JwtStrategy } from './jwt.strategy';
   imports: [
     JwtModule.register({
       global: true,
-      secret: 'super-secret-key', // ⚠️ En producción, usar variable de entorno
+      secret: 'SUPER_SECRETO_DEV', // ⚠️ En producción, usar variable de entorno
       signOptions: { expiresIn: '1h' },
     }),
     ClientsModule.register([
@@ -20,7 +20,7 @@ import { JwtStrategy } from './jwt.strategy';
         options: {
           urls: ['amqp://guest:guest@localhost:5672'],
           queue: 'users_queue',
-          queueOptions: { durable: false },
+          queueOptions: { durable: true },
         },
       },
     ]),

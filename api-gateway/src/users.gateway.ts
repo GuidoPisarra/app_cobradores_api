@@ -11,7 +11,7 @@ export class UsersGateway {
     options: {
       urls: ['amqp://guest:guest@localhost:5672'],
       queue: 'users_queue',
-      queueOptions: { durable: false },
+      queueOptions: { durable: true },
     },
   })
   private client!: ClientProxy;

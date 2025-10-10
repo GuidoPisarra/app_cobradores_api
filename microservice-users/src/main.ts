@@ -11,7 +11,7 @@ async function bootstrap() {
       urls: ['amqp://guest:guest@localhost:5672'],
       queue: 'users_queue', // 👈 debe coincidir con el gateway
       queueOptions: {
-        durable: false,
+        durable: true,
       },
     },
   });
