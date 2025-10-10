@@ -16,6 +16,15 @@ El proyecto usa **NestJS** con comunicación entre microservicios mediante **Rab
 
 ## 🧠 Servicios actuales
 
+### Crar microsrevicio
+- nest new nombre-microservicio
+
+Dentro de la carpeta del microservicio: 
+
+pnpm install bcrypt
+pnpm add @nestjs/passport @nestjs/jwt passport passport-jwt
+pnpm install amqp-connection-manager amqplib
+
 ### 1. `api-gateway`
 - Expone los endpoints HTTP (REST).
 - Valida y genera JWT.
@@ -63,6 +72,10 @@ pnpm install
 
 Si no tenés pnpm:
 npm install -g pnpm
+
+correr imagen de mongo para logs 
+docker run -d --name mongo -p 27017:27017 mongo
+
 
 🐇 Configuración de RabbitMQ
 
@@ -182,3 +195,11 @@ APP_COBRADORES_API/
     ├── ...
     └── .env
 
+
+
+### GIT 
+
+Al crear un nuevo microservicio este no se guarda automaticamente en el repo de git entonces:
+
+1- git submodule update --init --recursive
+2- m -rf nombre-microservicio/.git

@@ -7,7 +7,7 @@
 import { Controller, Post, Body, UseGuards, Request, HttpException, HttpStatus } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Client, ClientProxy, Transport } from '@nestjs/microservices';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom, timeout } from 'rxjs';
 import { CratePaymentDTO } from '../dto/payments/create-payment.dto';
 
 @Controller('payments')
@@ -31,7 +31,8 @@ export class PaymentsController {
         { cmd: 'create_payment' },
         { user, data: body },
       );
-      const result = await lastValueFrom(observable);
+      const result = await lastValueFrom(observable.pipe(timeout(5000)));
+
       if (!result || result.ok === false) {
         throw new HttpException(result?.error || 'Creacion de pago fallida.', HttpStatus.UNAUTHORIZED);
       }
