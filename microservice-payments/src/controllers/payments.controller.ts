@@ -11,6 +11,6 @@ export class PaymentsController {
   @MessagePattern({ cmd: 'create_payment' })
   async createPayment(@Payload() payload: any) {
     const { user, data } = payload;
-    return this.paymentsService.createPayment(user, data);
+    return await this.paymentsService.createPayment(user, data);
   }
 }
