@@ -2,7 +2,7 @@ import { IsNumber, IsString } from 'class-validator';
 
 export class CratePaymentDTO {
   @IsNumber()
-  amount!: string;
+  amount!: number;
 
   @IsString()
   concept!: string;
