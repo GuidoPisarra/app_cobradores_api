@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
-import { Controller, Post, Body, UseGuards, Request, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Request, HttpException, HttpStatus, Inject } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Client, ClientProxy, Transport } from '@nestjs/microservices';
 import { lastValueFrom, timeout } from 'rxjs';
@@ -12,6 +12,11 @@ import { CratePaymentDTO } from '../dto/payments/create-payment.dto';
 
 @Controller('payments')
 export class PaymentsController {
+  constructor(
+    @Inject('PAYMENTS_SERVICE') private paymentsClient: ClientProxy,
+    @Inject('LOGS_SERVICE') private logsClient: ClientProxy,
+  ) { }
+
   @Client({
     transport: Transport.RMQ,
     options: {
@@ -20,7 +25,10 @@ export class PaymentsController {
       queueOptions: { durable: true },
     },
   })
-  private paymentsClient!: ClientProxy;
+  /* 
+    private paymentsClient!: ClientProxy;
+    private logsClient!: ClientProxy; */
+
 
   @UseGuards(AuthGuard('jwt'))
   @Post('crear_pago')
@@ -32,15 +40,20 @@ export class PaymentsController {
         { user, data: body },
       );
       const result = await lastValueFrom(observable.pipe(timeout(5000)));
-
-      if (!result || result.ok === false) {
-        throw new HttpException(result?.error || 'Creacion de pago fallida.', HttpStatus.UNAUTHORIZED);
-      }
-
       return result;
     } catch (err: any) {
-      const message = err?.message || 'Error al crear el pago';
-      throw new HttpException(message, HttpStatus.INTERNAL_SERVER_ERROR);
+      this.logsClient.emit('log.error', {
+        token: req.headers.authorization,
+        data: {
+          microservice: 'payments',
+          endpoint: '/payments/crear_pago', // <-- este debería llegar
+          message: err?.message || 'Error desconocido',
+          stack: err?.stack,
+          body: req.body,
+          headers: req.headers,
+        },
+      });
+      throw new HttpException(err?.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

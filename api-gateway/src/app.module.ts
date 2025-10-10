@@ -9,11 +9,20 @@ import { PaymentsController } from './controllers/payment.controller';
   imports: [
     ClientsModule.register([
       {
-        name: 'USERS_SERVICE',
+        name: 'PAYMENTS_SERVICE',
         transport: Transport.RMQ,
         options: {
           urls: [process.env.RABBIT_URL || 'amqp://guest:guest@localhost:5672'],
-          queue: 'users_queue',
+          queue: 'payments_queue',
+          queueOptions: { durable: true },
+        },
+      },
+      {
+        name: 'LOGS_SERVICE',
+        transport: Transport.RMQ,
+        options: {
+          urls: ['amqp://guest:guest@localhost:5672'],
+          queue: 'logs_queue',
           queueOptions: { durable: true },
         },
       },
