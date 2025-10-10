@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { AuthModule } from './auth/auth.module';
 import { ProtectedController } from './controllers/protected.controller';
+import { PaymentsController } from './controllers/payment.controller';
 
 @Module({
   imports: [
@@ -19,6 +20,6 @@ import { ProtectedController } from './controllers/protected.controller';
     ]),
     AuthModule,
   ],
-  controllers: [ProtectedController],
+  controllers: [ProtectedController, PaymentsController],
 })
 export class AppModule { }
