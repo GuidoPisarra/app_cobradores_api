@@ -3,7 +3,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { ClientProxy, Client } from '@nestjs/microservices';
 import { Transport } from '@nestjs/microservices';
-import { LoginDto } from '../dto/login.dto';
+import { LoginDto } from '../dto/users/login.dto';
 import { AppService } from '../app.service';
 
 @Controller()

@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Controller, Post, Body, Inject, HttpException, HttpStatus } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { LoginDto } from '../dto/login.dto';
+import { LoginDto } from '../dto/users/login.dto';
 import { AuthService } from './auth.service';
 import { firstValueFrom, timeout } from 'rxjs';
 
