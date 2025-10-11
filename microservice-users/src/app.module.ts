@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
-import { UsersController } from './controllers/users.controllers';
+import { UsersController } from './controllers/users.controller';
 import { UsersService } from './services/user.service';
 import { UsersRepository } from './repositories/user.repository';
 import { MySQLProvider } from './database/database.provider';

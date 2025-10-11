@@ -102,7 +102,7 @@ export class AuthController {
     @Body() dto: UpdateUserDTO
   ) {
     const pattern = { cmd: 'users.update' };
-    const payload = { id, dto }; // pasar dto como objeto
+    const payload = { id, dto };
 
     try {
       const response$ = this.client.send(pattern, payload);
@@ -112,7 +112,7 @@ export class AuthController {
         throw new HttpException('Actualización fallida', HttpStatus.BAD_REQUEST);
       }
 
-      return { user: updatedUser }; // ya devuelve el usuario
+      return { user: updatedUser };
     } catch (err: any) {
       throw new HttpException(err?.message || 'Error actualizando usuario', HttpStatus.INTERNAL_SERVER_ERROR);
     }

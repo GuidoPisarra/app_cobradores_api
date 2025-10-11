@@ -25,10 +25,6 @@ export class PaymentsController {
       queueOptions: { durable: true },
     },
   })
-  /* 
-    private paymentsClient!: ClientProxy;
-    private logsClient!: ClientProxy; */
-
 
   @UseGuards(AuthGuard('jwt'))
   @Post('crear_pago')
@@ -46,7 +42,7 @@ export class PaymentsController {
         token: req.headers.authorization,
         data: {
           microservice: 'payments',
-          endpoint: '/payments/crear_pago', // <-- este debería llegar
+          endpoint: '/payments/crear_pago',
           message: err?.message || 'Error desconocido',
           stack: err?.stack,
           body: req.body,

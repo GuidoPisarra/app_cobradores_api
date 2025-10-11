@@ -18,7 +18,6 @@ export class UsersService {
     const user = await this.usersRepository.findByEmail(email);
     if (!user) return null;
 
-    // comparar la contraseña plana con el hash guardado
     const isValid = await bcrypt.compare(passwordUsuario, user.password);
     if (!isValid) return null;
 
@@ -29,9 +28,8 @@ export class UsersService {
   async createUser(email: string, password: string, name: string) {
     try {
       const user = await this.usersRepository.createUser(email, name, password);
-      return user; // el repo ya devuelve id, email, name
+      return user;
     } catch (err: any) {
-      // si querés manejar duplicados amigables
       if (err && err.code === 'ER_DUP_ENTRY') {
         throw new ConflictException('Email ya registrado');
       }
