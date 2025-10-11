@@ -2,13 +2,13 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { Controller, Post, Body, Inject, HttpException, HttpStatus, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Inject, HttpException, HttpStatus, Delete, UseGuards, Param } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { LoginDTO } from '../dto/users/login.dto';
 import { AuthService } from './auth.service';
 import { firstValueFrom, timeout } from 'rxjs';
 import { NewUserDTO } from '../dto/users/newUser.dto';
-import { DeleteUserDTO } from '../dto/users/deleteUser.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
@@ -68,25 +68,27 @@ export class AuthController {
   }
 
 
-  @Delete('delete_user')
-  async deleteUser(@Body() dto: DeleteUserDTO) {
-    // send RPC request to users microservice
+  @UseGuards(AuthGuard('jwt'))
+  @Delete('delete_user/:id')
+  async deleteUser(@Param('id') idParam: string) {
+    const id = parseInt(idParam, 10);
+    if (isNaN(id)) {
+      throw new HttpException('ID inválido', HttpStatus.BAD_REQUEST);
+    }
+
     const pattern = { cmd: 'auth.delete_user' };
-    const payload = { id: dto.id };
+    const payload = { id };
 
     try {
-      // .send devuelve Observable -> await se queda con firstValueFrom
       const response$ = this.client.send(pattern, payload);
-      // opcional: timeout en ms (ej. 5000)
       const res = await firstValueFrom(response$.pipe(timeout(5000)));
+
       if (!res || res.ok === false) {
         throw new HttpException(res?.error || 'Eliminación fallida', HttpStatus.UNAUTHORIZED);
       }
 
-
       return { user: res.user };
     } catch (err: any) {
-      // distingue timeout/errores de transporte
       const message = err?.message || 'Error eliminando usuario';
       throw new HttpException(message, HttpStatus.INTERNAL_SERVER_ERROR);
     }

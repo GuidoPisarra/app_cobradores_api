@@ -15,7 +15,6 @@ export class UsersRepository {
   async createUser(email: string, name: string, password: string) {
     const conn = this.mysqlProvider.getConnection();
 
-    // Leer salt rounds desde .env; fallback a 10 si no existe o no es número
     const saltEnv = process.env.BCRYPT_SALT_ROUNDS || '10';
     const saltRounds = Number.isFinite(Number(saltEnv)) ? parseInt(saltEnv, 10) : 10;
 
