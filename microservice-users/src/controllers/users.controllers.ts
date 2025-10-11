@@ -26,4 +26,12 @@ export class UsersController {
     return { ok: true, user };
   }
 
+
+  @MessagePattern({ cmd: 'auth.delete_user' })
+  async deleteUser(data: { id: number }) {
+    const user = await this.usersService.deleteUser(data.id);
+
+    return { ok: true, user };
+  }
+
 }
