@@ -1,11 +1,13 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { Injectable, ConflictException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, ConflictException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { UsersRepository } from '../repositories/user.repository';
 import * as bcrypt from 'bcrypt';
+import { UpdateUserDTO } from 'src/dto/updateUser.dto';
 
 @Injectable()
 export class UsersService {
@@ -40,5 +42,18 @@ export class UsersService {
   async deleteUser(id: number) {
     const user = await this.usersRepository.deleteUser(id);
     return user;
+  }
+
+  async updateUser(id: number, dto: UpdateUserDTO) {
+    try {
+      const updatedUser = await this.usersRepository.updateUser(id, dto);
+      if (!updatedUser) {
+        throw new NotFoundException('Usuario no encontrado o nada para actualizar');
+      }
+      return updatedUser;
+    } catch (err) {
+      console.error('Error en UsersService.updateUser:', err);
+      throw err;
+    }
   }
 }

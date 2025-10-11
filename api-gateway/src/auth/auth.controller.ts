@@ -2,13 +2,14 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { Controller, Post, Body, Inject, HttpException, HttpStatus, Delete, UseGuards, Param } from '@nestjs/common';
+import { Controller, Post, Body, Inject, HttpException, HttpStatus, Delete, UseGuards, Param, Patch, ParseIntPipe } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { LoginDTO } from '../dto/users/login.dto';
 import { AuthService } from './auth.service';
 import { firstValueFrom, timeout } from 'rxjs';
 import { NewUserDTO } from '../dto/users/newUser.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { UpdateUserDTO } from '../dto/users/updateUser.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -91,6 +92,29 @@ export class AuthController {
     } catch (err: any) {
       const message = err?.message || 'Error eliminando usuario';
       throw new HttpException(message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Patch('update_user/:id')
+  async updateUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateUserDTO
+  ) {
+    const pattern = { cmd: 'users.update' };
+    const payload = { id, dto }; // pasar dto como objeto
+
+    try {
+      const response$ = this.client.send(pattern, payload);
+      const updatedUser = await firstValueFrom(response$.pipe(timeout(5000)));
+
+      if (!updatedUser) {
+        throw new HttpException('Actualización fallida', HttpStatus.BAD_REQUEST);
+      }
+
+      return { user: updatedUser }; // ya devuelve el usuario
+    } catch (err: any) {
+      throw new HttpException(err?.message || 'Error actualizando usuario', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 

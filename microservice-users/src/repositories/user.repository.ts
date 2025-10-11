@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
@@ -6,6 +7,7 @@ import { Injectable } from '@nestjs/common';
 import { MySQLProvider } from 'src/database/database.provider';
 import { User } from '../interfaces/user.interface';
 import * as bcrypt from 'bcrypt';
+import { UpdateUserDTO } from 'src/dto/updateUser.dto';
 
 @Injectable()
 export class UsersRepository {
@@ -42,9 +44,39 @@ export class UsersRepository {
   }
 
   // Actualizar usuario
-  async updateUser(id: number, name: string) {
+  async updateUser(id: number, dto: UpdateUserDTO) {
     const conn = this.mysqlProvider.getConnection();
-    await conn.execute('UPDATE Users SET name = ? WHERE id = ?', [name, id]);
+    const fields: string[] = [];
+    const values: any[] = [];
+
+    if (dto.email) {
+      fields.push('email = ?');
+      values.push(dto.email);
+    }
+    if (dto.name) {
+      fields.push('name = ?');
+      values.push(dto.name);
+    }
+    if (dto.password) {
+      const saltRounds = Number(process.env.BCRYPT_SALT_ROUNDS) || 10;
+      const hashed = bcrypt.hashSync(dto.password, saltRounds);
+      fields.push('password = ?');
+      values.push(hashed);
+    }
+
+    if (fields.length === 0) return null;
+
+    const sql = `UPDATE Users SET ${fields.join(', ')} WHERE id = ?`;
+    values.push(id);
+
+    await conn.execute(sql, values);
+
+    const [rows]: any = await conn.execute(
+      'SELECT id, email, name FROM Users WHERE id = ?',
+      [id],
+    );
+
+    return (rows as any[])[0];
   }
 
   // Eliminar usuario
