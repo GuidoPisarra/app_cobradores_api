@@ -1,31 +1,41 @@
-/* eslint-disable @typescript-eslint/require-await */
-/* eslint-disable prettier/prettier */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
+import { MySQLProvider } from 'src/database/database.provider';
+import { User } from '../interfaces/user.interface';
 import * as bcrypt from 'bcrypt';
-
-// Usuario demo inicial (password '123456')
-const demoPasswordHash = bcrypt.hashSync('123456', 10);
 
 @Injectable()
 export class UsersRepository {
-  // arreglo in-memory (id, email, name, passwordHash)
-  private users = [
-    { id: 1, email: 'admin@cobradores.com', name: 'Admin', passwordHash: demoPasswordHash },
-    { id: 2, email: 'user@cobradores.com', name: 'User', passwordHash: bcrypt.hashSync('pass', 10) },
-  ];
+  constructor(private readonly mysqlProvider: MySQLProvider) { }
 
-  async findByEmail(email: string) {
-    return this.users.find(u => u.email === email) || null;
+  // Crear usuario
+  async createUser(email: string, name: string, password: string) {
+    const conn = this.mysqlProvider.getConnection();
+    const passwordHash = bcrypt.hashSync(password, 10);
+
+    const [result] = await conn.execute(
+      'INSERT INTO Users (email, name, password) VALUES (?, ?, ?)',
+      [email, name, passwordHash],
+    );
+    console.log(result);
+    return result;
   }
 
-  // método para "crear" usuarios (opcional)
-  async createUser(email: string, name: string, plainPassword: string) {
-    const hash = await bcrypt.hash(plainPassword, 10);
-    const newUser = { id: Date.now(), email, name, passwordHash: hash };
-    this.users.push(newUser);
-    return newUser;
+  // Buscar usuario por email
+  async findByEmail(email: string): Promise<User | null> {
+    const conn = this.mysqlProvider.getConnection();
+    const [rows] = await conn.execute('SELECT * FROM Users WHERE email = ?', [email]);
+
+    const users = rows as User[];
+    return users.length > 0 ? users[0] : null;
+  }
+
+  // Actualizar usuario
+  async updateUser(id: number, name: string) {
+    const conn = this.mysqlProvider.getConnection();
+    await conn.execute('UPDATE Users SET name = ? WHERE id = ?', [name, id]);
   }
 }

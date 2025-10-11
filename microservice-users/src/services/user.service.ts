@@ -18,8 +18,18 @@ export class UsersService {
     const isValid = await bcrypt.compare(password, user.passwordHash);
     if (!isValid) return null;
 
-    // quitamos el hash antes de enviar
     const { passwordHash, ...safeUser } = user;
     return safeUser;
   }
+
+  async createUser(email: string, password: string, name: string) {
+    const user = await this.usersRepository.createUser(email, name, password);
+    if (!user) return null;
+
+    const { ...safeUser } = user;
+    return safeUser;
+  }
+
+
+
 }

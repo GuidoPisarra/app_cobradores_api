@@ -7,6 +7,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { LoginDTO } from '../dto/users/login.dto';
 import { AuthService } from './auth.service';
 import { firstValueFrom, timeout } from 'rxjs';
+import { NewUserDTO } from '../dto/users/newUser.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -39,4 +40,32 @@ export class AuthController {
       throw new HttpException(message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+
+  @Post('create_user')
+  async createUser(@Body() dto: NewUserDTO) {
+    // send RPC request to users microservice
+    const pattern = { cmd: 'auth.new_user' };
+    const payload = { email: dto.email, password: dto.password, name: dto.name };
+
+    try {
+      // .send devuelve Observable -> await se queda con firstValueFrom
+      const response$ = this.client.send(pattern, payload);
+      // opcional: timeout en ms (ej. 5000)
+      const res = await firstValueFrom(response$.pipe(timeout(5000)));
+      if (!res || res.ok === false) {
+        throw new HttpException(res?.error || 'Creación fallida', HttpStatus.UNAUTHORIZED);
+      }
+
+
+      return { user: res.user };
+    } catch (err: any) {
+      // distingue timeout/errores de transporte
+      const message = err?.message || 'Error creando usuario';
+      throw new HttpException(message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+
+
 }

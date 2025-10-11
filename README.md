@@ -77,11 +77,23 @@ correr imagen de mongo para logs
 docker run -d --name mongo -p 27017:27017 mongo
 
 
+#BBDD mongo
+
+una vez creada se ve con mongosh "mongodb://localhost:27017/logsdb"
+
+se ve la cantidad de documentos con --> db.logs.find().sort({ createdAt: -1 }).limit(5).pretty()
+y muestra la cantidad de documentos con --> db.logs.countDocuments()
+
+
 🐇 Configuración de RabbitMQ
 
 Iniciar RabbitMQ localmente con Docker:
 
 docker run -d --hostname my-rabbit --name rabbit -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+
+despues se levanta con docker ps -a se busca la imagen y docker start id_imagen
+
+
 
 
 Acceder al panel de control:

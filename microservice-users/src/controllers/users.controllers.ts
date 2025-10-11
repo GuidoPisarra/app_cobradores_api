@@ -15,4 +15,15 @@ export class UsersController {
     }
     return { ok: true, user };
   }
+
+
+  @MessagePattern({ cmd: 'auth.new_user' })
+  async createUser(data: { email: string; password: string, name: string }) {
+    const user = await this.usersService.createUser(data.email, data.password, data.name);
+    if (!user) {
+      return { ok: false, error: 'Error al crear usuario' };
+    }
+    return { ok: true, user };
+  }
+
 }
