@@ -16,12 +16,16 @@ export class UsersRepository {
     const conn = this.mysqlProvider.getConnection();
     const passwordHash = bcrypt.hashSync(password, 10);
 
-    const [result] = await conn.execute(
+    const [result]: any = await conn.execute(
       'INSERT INTO Users (email, name, password) VALUES (?, ?, ?)',
       [email, name, passwordHash],
     );
-    console.log(result);
-    return result;
+
+    return {
+      id: result.insertId,
+      email,
+      name,
+    };
   }
 
   // Buscar usuario por email
