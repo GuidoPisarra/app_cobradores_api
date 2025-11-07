@@ -54,26 +54,3 @@ pids
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
-# Python virtual envs
-.venv/
-venv/
-*/.venv/
-*/venv/
-
-# Python cache
-__pycache__/
-*/__pycache__/
-
-# Modelos y pesos YOLO
-*.pt
-*.pth
-*.onnx
-*.engine
-*.trt
-
-# Bases de datos sqlite locales
-*.sqlite3
-
-# Caché Torch / Ultralytics
-~/.cache/torch/
-~/.cache/ultralytics/
