@@ -13,6 +13,7 @@ export class UsersController {
   @MessagePattern({ cmd: 'auth.validate' })
   async validateUser(data: { email: string; password: string }) {
     const user = await this.usersService.validateUser(data.email, data.password);
+    console.log(user);
     if (!user) {
       return { ok: false, error: 'Credenciales inválidas' };
     }

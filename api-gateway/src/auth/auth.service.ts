@@ -10,7 +10,8 @@ export class AuthService {
   constructor(private jwtService: JwtService) { }
 
   async createJwtToken(user: any) {
-    const payload = { sub: user.id, email: user.email, name: user.name };
+    console.log(user);
+    const payload = { id: user.ID, email: user.email, name: user.name };
     return this.jwtService.sign(payload);
   }
 }

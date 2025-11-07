@@ -30,6 +30,8 @@ export class PaymentsController {
   @Post('crear_pago')
   async createPayment(@Body() body: CratePaymentDTO, @Request() req: any) {
     const user = req.user;
+    console.log(user); // { id: 5, name: 'Admin', email: 'admin@cobradores.com' }
+
     try {
       const observable = this.paymentsClient.send(
         { cmd: 'create_payment' },
